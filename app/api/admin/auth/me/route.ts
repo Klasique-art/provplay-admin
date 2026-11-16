@@ -1,0 +1,6 @@
+import type { NextRequest } from "next/server";
+import { proxyAdminGet } from "@/lib/admin-api-proxy";
+
+export function GET(request: NextRequest) {
+  return proxyAdminGet(request, "/api/v1/admin/auth/me");
+}
