@@ -86,7 +86,7 @@ export function PlatformOverview() {
       <section className="grid gap-5 xl:grid-cols-[1.35fr_.9fr]">
         <Panel eyebrow="Audience" title="Accounts by type" action={<Link className="text-sm font-bold text-[#8A6A00]" href="/analytics/growth">Open growth analytics →</Link>}>
           <div className="grid gap-4 sm:grid-cols-2">
-            {accountTypes.map((type) => <Bar key={type.id} label={type.label} max={maxAccountCount} value={data.accounts.by_type[type.id]} />)}
+            {accountTypes.map((type) => <Bar key={type.id} label={type.label} max={maxAccountCount} value={data.accounts.by_type[type.id] ?? 0} />)}
           </div>
           <div className="mt-6 grid grid-cols-2 gap-3 border-t border-slate-200 pt-5 sm:grid-cols-4">
             <SmallStat label="Active" tone="green" value={data.accounts.by_status.active} />
