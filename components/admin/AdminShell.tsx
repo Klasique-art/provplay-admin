@@ -1,12 +1,22 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [mobileNavigationOpen, setMobileNavigationOpen] = useState(false);
+
+  useEffect(() => {
+    if (!mobileNavigationOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") setMobileNavigationOpen(false); };
+    document.addEventListener("keydown", closeOnEscape);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.removeEventListener("keydown", closeOnEscape); document.body.style.overflow = previousOverflow; };
+  }, [mobileNavigationOpen]);
 
   if (pathname === "/login") return children;
 
@@ -28,9 +38,11 @@ export function AdminShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen md:grid md:grid-cols-[220px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)]">
       <Sidebar />
+      {mobileNavigationOpen ? <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-label="Administration navigation" aria-modal="true"><button aria-label="Close navigation" className="absolute inset-0 cursor-default bg-slate-950/65 backdrop-blur-sm" onClick={() => setMobileNavigationOpen(false)} type="button" /><div className="relative h-full w-fit shadow-2xl"><Sidebar mobile onNavigate={() => setMobileNavigationOpen(false)} /></div></div> : null}
       <div className="min-w-0">
         <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-slate-200 bg-white/95 px-4 backdrop-blur-xl md:px-6">
           <div className="flex items-center gap-2 md:hidden">
+            <button aria-expanded={mobileNavigationOpen} aria-label="Open navigation" className="grid size-10 place-items-center gap-1 rounded-lg border border-slate-200 bg-white py-2.5 text-[#0F1F42]" onClick={() => setMobileNavigationOpen(true)} type="button"><span className="h-0.5 w-4 rounded bg-current" /><span className="h-0.5 w-4 rounded bg-current" /><span className="h-0.5 w-4 rounded bg-current" /></button>
             <span className="grid size-8 place-items-center rounded-[10px] bg-[#E6B800] text-sm font-extrabold text-[#050A1A]">P</span>
             <strong className="text-xs">ProvPlay</strong>
           </div>
