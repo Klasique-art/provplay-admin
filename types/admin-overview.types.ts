@@ -6,7 +6,7 @@ export type AdminOverview = {
   period: { days: 7 | 30 | 90; starts_at: string; ends_at: string };
   accounts: {
     total: number; active: number; new_in_period: number; change_percent: number | null;
-    by_type: Record<AccountType, number>; by_status: Record<AccountStatus, number>;
+    by_type: Record<AccountType | "unassigned", number>; by_status: Record<AccountStatus, number>;
   };
   subscriptions: {
     active_subscribers: number; new_in_period: number; change_percent: number | null;

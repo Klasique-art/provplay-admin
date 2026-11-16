@@ -6,9 +6,10 @@ import type { AdminOverview, OverviewRevenue } from "@/types/admin-overview.type
 import type { AccountType, ApiEnvelope } from "@/types/admin-user.types";
 import { AccountAvatar } from "./AccountAvatar";
 
-const accountTypes: Array<{ id: AccountType; label: string }> = [
+const accountTypes: Array<{ id: AccountType | "unassigned"; label: string }> = [
   { id: "player", label: "Players" }, { id: "coach", label: "Coaches" }, { id: "scout", label: "Scouts" },
   { id: "agent", label: "Agents" }, { id: "club", label: "Clubs" }, { id: "academy", label: "Academies" },
+  { id: "unassigned", label: "Account type not set" },
 ];
 
 export function PlatformOverview() {
@@ -78,7 +79,7 @@ export function PlatformOverview() {
       <section aria-label="Key platform metrics" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard detail={`${data.accounts.new_in_period.toLocaleString()} joined in this period`} href="/users" label="Total accounts" trend={data.accounts.change_percent} value={data.accounts.total.toLocaleString()} />
         <MetricCard detail={`${subscriberRate.toFixed(1)}% of all accounts`} href="/billing/subscriptions" label="Active subscribers" trend={data.subscriptions.change_percent} value={data.subscriptions.active_subscribers.toLocaleString()} />
-        <MetricCard detail={primaryRevenue ? `${primaryRevenue.transaction_count.toLocaleString()} live transactions` : "No live payments recorded"} href="/analytics/revenue" label={`Revenue · ${days} days`} trend={primaryRevenue?.change_percent} value={primaryRevenue ? money(primaryRevenue) : "—"} />
+        <MetricCard detail={primaryRevenue ? `${primaryRevenue.transaction_count.toLocaleString()} live transactions` : "No live payments recorded"} href="/analytics/revenue" label={`Revenue (GHC) · ${days} days`} trend={primaryRevenue?.change_percent} value={primaryRevenue ? money(primaryRevenue) : "GHC 0.00"} />
         <MetricCard detail={`${data.engagement.active_sessions.toLocaleString()} users with active sessions`} href="/analytics/engagement" label="Active users" value={data.engagement.active_users_in_period.toLocaleString()} />
       </section>
 
@@ -138,7 +139,7 @@ function StatusBadge({ status }: { status: string }) { const style = status === 
 function EmptyState({ text }: { text: string }) { return <div className="rounded-xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">{text}</div>; }
 function OverviewSkeleton() { return <div className="mx-auto max-w-[1600px] animate-pulse space-y-5"><div className="h-52 rounded-2xl bg-slate-200" /><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{[0, 1, 2, 3].map((item) => <div className="h-36 rounded-2xl bg-slate-200" key={item} />)}</div><div className="grid gap-5 xl:grid-cols-2"><div className="h-80 rounded-2xl bg-slate-200" /><div className="h-80 rounded-2xl bg-slate-200" /></div></div>; }
 function OverviewError({ message, retry }: { message: string; retry: () => void }) { return <div className="grid min-h-[65vh] place-items-center"><div className="max-w-lg rounded-2xl border border-red-200 bg-white p-8 text-center shadow-sm"><span className="mx-auto grid size-12 place-items-center rounded-xl bg-red-50 text-xl text-red-700">!</span><h1 className="mb-2 mt-4 text-2xl">Platform data could not be loaded</h1><p className="mb-5 mt-0 text-sm leading-6 text-slate-600">{message}</p><button className="button button--primary" onClick={retry}>Try again</button></div></div>; }
-function money(revenue: OverviewRevenue) { try { return new Intl.NumberFormat("en", { style: "currency", currency: revenue.currency }).format(revenue.amount_minor / 100); } catch { return `${revenue.currency} ${(revenue.amount_minor / 100).toLocaleString()}`; } }
+function money(revenue: OverviewRevenue) { return `GHC ${new Intl.NumberFormat("en-GH", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(revenue.amount_minor / 100)}`; }
 function formatDate(value: string) { return new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(new Date(value)); }
 function formatDateTime(value: string) { return new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value)); }
 function titleCase(value: string) { return value.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase()); }
