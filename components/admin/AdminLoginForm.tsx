@@ -73,7 +73,7 @@ export function AdminLoginForm() {
           <button
             type="button"
             onClick={() => setShowPassword((visible) => !visible)}
-            className="absolute inset-y-0 right-0 grid w-12 place-items-center rounded-r-xl text-slate-400 transition hover:text-white focus-visible:outline-offset-[-3px]"
+            className="absolute inset-y-0 right-0 grid w-12 cursor-pointer place-items-center rounded-r-xl text-slate-400 transition hover:text-white focus-visible:outline-offset-[-3px]"
             aria-label={showPassword ? "Hide password" : "Show password"}
             aria-pressed={showPassword}
             title={showPassword ? "Hide password" : "Show password"}
@@ -87,7 +87,7 @@ export function AdminLoginForm() {
         </span>
       </label>
       {error ? <div role="alert" className="rounded-xl border border-red-400/25 bg-red-400/10 px-4 py-3 text-red-100"><strong className="block text-sm">Sign-in failed</strong><p className="mb-0 mt-1 text-xs leading-5 text-red-200">{error}</p></div> : null}
-      <button disabled={loading} className="mt-1 h-12 rounded-xl bg-[#E6B800] font-extrabold text-[#050A1A] transition hover:bg-[#f2c300] disabled:cursor-wait disabled:opacity-60">
+      <button disabled={loading} className="mt-1 h-12 cursor-pointer rounded-xl bg-[#E6B800] font-extrabold text-[#050A1A] transition hover:bg-[#f2c300] disabled:cursor-wait disabled:opacity-60">
         {loading ? "Signing in…" : "Sign in to Control"}
       </button>
     </form>
