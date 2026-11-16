@@ -40,7 +40,6 @@ const specs:Spec[]=[
 ["/platform/feature-flags","Feature flags","Platform control","Roll out, pause, or target features by environment, role, plan, country, and cohort.",["Stage gradual rollouts","Kill-switch risky features","Target approved cohorts","Review dependencies"]],
 ["/platform/services","Services and jobs","Platform control","Monitor APIs, sockets, uploads, media processing, queues, jobs, and providers.",["Track health and latency","Retry safe failed jobs","Pause unhealthy workers","Inspect incidents"]],
 ["/platform/audit-log","Audit log","Platform control","Search immutable admin access, decisions, mutations, exports, and high-risk actions.",["Filter by actor and resource","Inspect before-and-after state","Export authorized evidence","Detect suspicious behavior"]],
-["/platform/admins","Admin team and roles","Platform control","Manage administrator identities, scoped roles, strong authentication, and sessions.",["Enforce least privilege","Require step-up authentication","Revoke sessions and access","Run access reviews"]],
 ["/platform/privacy","Privacy and data requests","Platform control","Process access, portability, correction, deletion, retention, and legal holds.",["Verify requester identity","Coordinate exports and deletion","Apply retention and holds","Audit data access"]],
 ["/platform/settings","Platform settings","Platform control","Control countries, currencies, football metadata, policies, limits, and configuration.",["Version shared configuration","Manage localized metadata","Validate before publishing","Roll back unsafe changes"]]
 ];
@@ -56,6 +55,6 @@ export const navGroups:NavGroup[]=[
 {label:"Football operations",items:items([["/opportunities/trials","Trials","TR"],["/operations/fixtures","Fixtures & matches","FM"],["/operations/recruitment","Recruitment","RC"],["/operations/contracts","Contracts","CT"],["/operations/development","Development","DV"],["/operations/relationships","Relationships","RL"]])},
 {label:"Communications",items:items([["/communications/conversations","Conversations","CV"],["/communications/notifications","Notifications","NT"],["/communications/announcements","Announcements","AN"]])},
 {label:"Revenue & plans",items:items([["/billing/subscriptions","Subscriptions","SB"],["/billing/payments","Payments","PY"],["/billing/plans","Plans & entitlements","PE"],["/billing/promotions","Promotions","PR"]])},
-{label:"Platform",items:items([["/platform/feature-flags","Feature flags","FF"],["/platform/services","Services & jobs","SJ"],["/platform/audit-log","Audit log","AL"],["/platform/admins","Admin access","AA"],["/platform/privacy","Privacy requests","PD"],["/platform/settings","Settings","ST"]])}
+{label:"Platform",items:items([["/platform/feature-flags","Feature flags","FF"],["/platform/services","Services & jobs","SJ"],["/platform/audit-log","Audit log","AL"],["/platform/privacy","Privacy requests","PD"],["/platform/settings","Settings","ST"]])}
 ];
 export function findAdminPage(href:string){return href==="/"?dashboardPage:adminPages.find(page=>page.href===href)}
