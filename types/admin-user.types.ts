@@ -43,6 +43,7 @@ export type AdminUserDetail = {
     deletion_reason?: string | null;
   };
   profile: null | {
+    cover_url?: string | null;
     city?: string | null;
     bio?: string | null;
     visibility?: string;

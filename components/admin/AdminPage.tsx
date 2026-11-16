@@ -1,5 +1,6 @@
 import type { AdminPageDefinition } from "@/config/admin-pages";
 import { AccountTypeTabs } from "./AccountTypeTabs";
+import { BackButton } from "./BackButton";
 
 const toneClasses = { positive: "text-emerald-700", warning: "text-amber-700", danger: "text-red-700" } as const;
 const iconToneClasses = { positive: "bg-emerald-100 text-emerald-700", warning: "bg-amber-100 text-amber-700", danger: "bg-red-100 text-red-700" } as const;
@@ -7,6 +8,7 @@ const iconToneClasses = { positive: "bg-emerald-100 text-emerald-700", warning: 
 export function AdminPage({ page }: { page: AdminPageDefinition }) {
   return (
     <div className="mx-auto w-full max-w-[1600px]">
+      {page.href !== "/" ? <BackButton href="/" label="Back to overview" /> : null}
       <div className="mb-4 flex items-center gap-2 overflow-hidden whitespace-nowrap text-[10px] text-slate-500"><span>ProvPlay Control</span><b className="text-slate-300">/</b><span>{page.eyebrow}</span><b className="text-slate-300">/</b><strong className="font-semibold text-slate-600">{page.title}</strong></div>
       <header className="mb-6 flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-end">
         <div><p className="m-0 text-[9px] font-extrabold uppercase tracking-[.12em] text-[#B58A00]">{page.eyebrow}</p><h1 className="my-1 text-[clamp(25px,2.3vw,34px)] font-extrabold leading-tight tracking-[-.03em] text-slate-900">{page.title}</h1><p className="m-0 max-w-3xl text-sm leading-6 text-slate-600">{page.description}</p></div>

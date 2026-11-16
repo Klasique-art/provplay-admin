@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import type { AdminUserDetail, ApiEnvelope } from "@/types/admin-user.types";
+import { AccountAvatar } from "./AccountAvatar";
+import { BackButton } from "./BackButton";
 
 const sections = ["Overview", "Profile & identity", "Activity", "Relationships", "Content", "Safety & reports", "Subscription & payments", "Sessions & security", "Audit history"];
 const verificationAccountTypes = new Set(["scout", "agent", "club", "academy"]);
@@ -13,6 +16,7 @@ export function UserDetailPage({ userId }: { userId: string }) {
   const [error, setError] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState("Overview");
   const [retryKey, setRetryKey] = useState(0);
+  const [failedCoverUrl, setFailedCoverUrl] = useState<string | null>(null);
 
   useEffect(() => { const controller = new AbortController(); fetch(`/api/admin/users/${encodeURIComponent(userId)}`, { cache: "no-store", signal: controller.signal }).then(async response => { const payload = await response.json(); if (!response.ok || !payload.success) throw new Error(payload.error?.message ?? "Unable to load this account."); return (payload as ApiEnvelope<AdminUserDetail>).data; }).then(nextData => { setData(nextData); setError(null); }).catch(reason => { if (reason instanceof DOMException && reason.name === "AbortError") return; setError(reason instanceof Error ? reason.message : "Unable to load this account."); }).finally(() => { if (!controller.signal.aborted) setLoading(false); }); return () => controller.abort(); }, [retryKey, userId]);
 
@@ -20,10 +24,14 @@ export function UserDetailPage({ userId }: { userId: string }) {
   if (error || !data) return <div className="mx-auto grid min-h-[480px] w-full max-w-[1600px] place-items-center rounded-[14px] border border-slate-200 bg-white p-8 text-center"><div><h1 className="text-lg">Account unavailable</h1><p className="text-sm text-slate-500">{error}</p><div className="flex justify-center gap-2"><Link className="button button--secondary" href="/users">Back to accounts</Link><button className="button button--primary" onClick={() => { setLoading(true); setRetryKey((key) => key + 1); }}>Try again</button></div></div></div>;
 
   const { account, profile, moderation, activity, subscriptions } = data;
+  const supportsCover = ["player", "club", "academy"].includes(account.account_type);
+  const coverUrl = supportsCover ? profile?.cover_url : null;
   return <div className="mx-auto w-full max-w-[1600px]">
+    <BackButton href="/users" label="Back to accounts" />
     <div className="mb-4 flex items-center gap-2 text-sm text-slate-500"><Link href="/users">Accounts</Link><b className="text-slate-300">/</b><span className="capitalize">{account.account_type}</span><b className="text-slate-300">/</b><strong className="text-slate-700">{account.full_name}</strong></div>
     <header className="mb-4 overflow-hidden rounded-[14px] border border-slate-200 bg-white">
-      <div className="h-2 bg-[#0F1F42]" /><div className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between"><div className="flex items-center gap-4"><span className="grid size-16 shrink-0 place-items-center rounded-2xl bg-[#0F1F42] text-xl font-extrabold text-white">{initials(account.full_name)}</span><div><div className="flex flex-wrap items-center gap-2"><h1 className="m-0 text-2xl tracking-tight">{account.full_name}</h1><Badge tone={account.status === "active" ? "success" : account.status === "suspended" ? "danger" : "warning"}>{account.status.replaceAll("_", " ")}</Badge>{account.professionally_verified ? <Badge tone="success">Verified</Badge> : null}</div><p className="mb-0 mt-1 text-xs text-slate-500">@{account.username} · {account.email} · <span className="capitalize">{account.account_type}</span></p><p className="mb-0 mt-2 font-mono text-[9px] text-slate-400">{account.user_id}</p></div></div><div className="flex flex-wrap gap-2"><button className="button button--secondary">Send notice</button><button className="button button--secondary">Reset sessions</button><button className="button border-red-200 bg-red-50 text-red-700">Review restriction</button></div></div>
+      {supportsCover ? <div className="relative h-40 overflow-hidden bg-[linear-gradient(135deg,#0F1F42,#244785)]">{coverUrl && failedCoverUrl !== coverUrl ? <Image alt={`${account.full_name} cover image`} className="object-cover" fill onError={() => setFailedCoverUrl(coverUrl)} sizes="(max-width: 768px) 100vw, 80vw" src={coverUrl} /> : <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(230,184,0,.22),transparent_30%)]" />}</div> : <div className="h-3 bg-[#0F1F42]" />}
+      <div className={`flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between ${supportsCover ? "pt-0" : ""}`}><div className={`flex items-center gap-4 ${supportsCover ? "-mt-10" : ""}`}><AccountAvatar className="size-24 border-4 border-white text-2xl shadow-md" name={account.full_name} sizes="96px" src={account.avatar_url} /><div className={supportsCover ? "pt-10" : ""}><div className="flex flex-wrap items-center gap-2"><h1 className="m-0 text-2xl tracking-tight">{account.full_name}</h1><Badge tone={account.status === "active" ? "success" : account.status === "suspended" ? "danger" : "warning"}>{account.status.replaceAll("_", " ")}</Badge>{account.professionally_verified ? <Badge tone="success">Verified</Badge> : null}</div><p className="mb-0 mt-1 text-sm text-slate-500">@{account.username} · {account.email} · <span className="capitalize">{account.account_type}</span></p><p className="mb-0 mt-2 font-mono text-xs text-slate-400">{account.user_id}</p></div></div><div className="flex flex-wrap gap-2"><button className="button button--secondary">Send notice</button><button className="button button--secondary">Reset sessions</button><button className="button border-red-200 bg-red-50 text-red-700">Review restriction</button></div></div>
     </header>
     <div className="mb-4 overflow-x-auto rounded-[14px] border border-slate-200 bg-white px-3"><nav className="flex min-w-max" aria-label="Account detail sections">{sections.map((section) => <button className={`border-b-2 px-3 py-3 text-sm font-bold ${activeSection === section ? "border-[#E6B800] text-[#0F1F42]" : "border-transparent text-slate-500"}`} key={section} onClick={() => setActiveSection(section)}>{section}</button>)}</nav></div>
     {activeSection !== "Overview" ? <ScaffoldSection accountType={account.account_type} section={activeSection} /> : <>
@@ -43,4 +51,4 @@ function Stat({ label, value, tone }: { label: string; value: number; tone?: "da
 function Badge({ children, tone }: { children: React.ReactNode; tone: "success" | "warning" | "danger" }) { const colors={success:"bg-emerald-100 text-emerald-700",warning:"bg-amber-100 text-amber-700",danger:"bg-red-100 text-red-700"};return <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold capitalize ${colors[tone]}`}>{children}</span>; }
 function EmptyInline({ text }: { text: string }) { return <p className="m-0 px-4 py-5 text-sm text-slate-500">{text}</p>; }
 function DetailSkeleton(){return <div className="mx-auto w-full max-w-[1600px] animate-pulse"><div className="mb-4 h-36 rounded-[14px] bg-white"/><div className="grid grid-cols-2 gap-3 lg:grid-cols-4">{[0,1,2,3].map(i=><div className="h-24 rounded-[14px] bg-white" key={i}/>)}</div></div>}
-function initials(name:string){return name.split(/\s+/).slice(0,2).map(part=>part[0]).join("").toUpperCase()}function capitalize(value:string){return value.charAt(0).toUpperCase()+value.slice(1)}function yesNo(value:boolean){return value?"Yes":"No"}function formatDate(value:string){return new Intl.DateTimeFormat("en",{dateStyle:"medium",timeStyle:"short"}).format(new Date(value))}
+function capitalize(value:string){return value.charAt(0).toUpperCase()+value.slice(1)}function yesNo(value:boolean){return value?"Yes":"No"}function formatDate(value:string){return new Intl.DateTimeFormat("en",{dateStyle:"medium",timeStyle:"short"}).format(new Date(value))}
