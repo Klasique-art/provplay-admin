@@ -11,7 +11,7 @@ import { HighlightVideoCard } from "./HighlightVideoCard";
 
 const sections = ["Overview", "Profile & identity", "Activity", "Relationships", "Content", "Safety & reports", "Subscription & payments", "Sessions & security", "Audit history"] as const;
 type Section = typeof sections[number];
-const verificationTypes = new Set(["scout", "agent", "club", "academy"]);
+const verificationTypes = new Set(["coach", "scout", "agent", "club", "academy"]);
 
 export function UserDetailPage({ userId }: { userId: string }) {
   const [data, setData] = useState<AdminUserDetail | null>(null);

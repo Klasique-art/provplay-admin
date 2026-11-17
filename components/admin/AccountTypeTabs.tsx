@@ -11,7 +11,7 @@ const accountTypes: Array<{ id: "all" | AccountType; label: string }> = [
 ];
 
 const blankCounts: Record<AccountType, number> = { player: 0, coach: 0, scout: 0, agent: 0, club: 0, academy: 0 };
-const verificationAccountTypes = new Set<AccountType>(["scout", "agent", "club", "academy"]);
+const verificationAccountTypes = new Set<AccountType>(["coach", "scout", "agent", "club", "academy"]);
 
 export function AccountTypeTabs() {
   const [activeType, setActiveType] = useState<"all" | AccountType>("all");
