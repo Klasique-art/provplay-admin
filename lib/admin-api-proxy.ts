@@ -28,9 +28,24 @@ export async function proxyAdminRequest(request: NextRequest, backendPath: strin
       cache: "no-store",
     });
     const body = await response.text();
+    const responseType = response.headers.get("content-type") ?? "";
+    if (!responseType.toLowerCase().includes("application/json")) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: "ADMIN_API_INVALID_RESPONSE",
+            message: response.status === 404
+              ? "This administration endpoint is not available on the deployed backend yet. Wait for the backend deployment to finish, then try again."
+              : "The ProvPlay backend returned an unexpected response. Try again shortly.",
+          },
+        },
+        { status: response.status >= 400 ? response.status : 502 },
+      );
+    }
     const result = new NextResponse(body, {
       status: response.status,
-      headers: { "content-type": response.headers.get("content-type") ?? "application/json" },
+      headers: { "content-type": responseType },
     });
     for (const cookie of response.headers.getSetCookie()) result.headers.append("set-cookie", cookie);
     return result;
