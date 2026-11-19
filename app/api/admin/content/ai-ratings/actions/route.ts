@@ -1,0 +1,1 @@
+import type {NextRequest} from "next/server";import {proxyAdminRequest} from "@/lib/admin-api-proxy";export function POST(request:NextRequest){return proxyAdminRequest(request,"/api/v1/admin/content/ai-ratings/actions")}
